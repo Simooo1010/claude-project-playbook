@@ -1,20 +1,17 @@
-# Setup — what only you can do
+# Setup for owner — external-reference use
 
-<!-- TEMPLATE. Claude keeps this file current: add a step when one is needed, tick it when done. Plain words, one action per line. -->
+This file is a checklist **pattern**, not a record of completed setup for every target project. The active agent maintains actual project-specific pending actions in the target's chosen tracking document or hand-off, with owner permission.
 
-Status: <n> of <m> done.
+## For each application repository
 
-## Accounts and access
-- [ ] <e.g. Connect GitHub to Claude: Settings → Connectors → GitHub>
-- [ ] <e.g. Create the Vercel project from the GitHub repo>
+- [ ] Give the agent read access to the **target application repository**.
+- [ ] Make `Simooo1010/claude-project-playbook` accessible as a **separate reference** (or provide the relevant content).
+- [ ] Explicitly ask the agent to adopt the playbook; selecting two repositories by itself is not enough.
+- [ ] Confirm the agent reports the playbook commit SHA and successfully read the mandatory files.
+- [ ] Agree on the target's approval mode (default: Strict) and authorize the product spec before coding.
+- [ ] Set any required secrets in supported environment-variable/secret-manager controls, **never in chat or Git**.
+- [ ] Connect external systems and grant narrowly scoped permissions only when required.
+- [ ] Test preview URLs on the specified real device, or explicitly confirm why a mandatory release gate remains pending.
+- [ ] Authorize production release separately unless explicitly delegated in the target's written settings.
 
-## Secrets (environment variables)
-Never paste secret values into chat. Set them here:
-- [ ] Claude cloud environment: <VAR_NAME> — <what it is, where to get it>
-- [ ] Vercel → Settings → Environment Variables (Preview + Production): <VAR_NAME>
-
-## Connections to outside systems
-- [ ] <e.g. Share the Notion database with the integration>
-
-## On your device
-- [ ] <e.g. Open the preview URL in Safari → Share → Add to Home Screen>
+The agent must state which steps are genuinely complete. It cannot enable provider capabilities, permissions, monitoring or recurring work merely by promising to do so.

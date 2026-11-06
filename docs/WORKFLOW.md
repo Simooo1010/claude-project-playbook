@@ -1,86 +1,111 @@
-# WORKFLOW — how Claude works in this repo
+# WORKFLOW — provider-neutral coding workflow
 
-Method for building web/mobile apps with Claude Code. Stack-neutral; §10 gives the default stack.
-`CLAUDE.md` holds the project's settings (approval mode, owner, device, rules). This file holds the method.
+Canonical development method for Claude Code, Codex and any other coding agent. This repository is the **central external playbook**; the application being built lives in a **separate target repository**. No GitHub template or file copying is required.
+
+`AGENTS.md` is an entrypoint, not a substitute for this file. `docs/PROVIDER-ADAPTERS.md` has implementation examples; this file remains authoritative for the method.
+
+---
+
+## 0. Activation, external references, and startup preflight
+
+The owner may explicitly adopt this playbook in a session that also has access to an application repository. **Access to two repositories alone does not activate the playbook.** No instruction file in this reference repo automatically governs a different repo, project, workspace or chat.
+
+On **every new session** and **every implementation step**, before implementation or delegation:
+
+1. Identify the **target repo** (code and project-specific truth) separately from this **playbook repo** (method). Confirm that the owner expressly adopted this workflow.
+2. Fetch and read the **full** `AGENTS.md`, this `docs/WORKFLOW.md`, and the relevant owner/provider guides from this playbook; inspect the target's relevant instructions, current spec, decision log, code state and open work. Do not rely on a search excerpt or prior-chat summary as proof of reading.
+3. Record the **exact immutable playbook commit SHA** and files read. Pin it for the current step/project; do not silently adopt newer changes midway through work. Record upgrades as decisions.
+4. Determine the target's current authorized step, **spec approval status**, owner, approval mode (default **Strict**), allowed external writes, dependencies, test devices and production-release authority. Read the applicable spec and any design-system instructions.
+5. Verify capabilities that actually exist in this environment: repository access, build/test tools, preview/device testing, Git/PR operations, subagents, model selection, reasoning effort and review tools. Choose a compliant plan under §9.
+6. Give a concise **preflight report** naming the two repositories, source commit/files actually read, step, approval mode, proposed model/effort/delegation where controllable, verified capabilities, and any blockers. Clearly say READY or BLOCKED for the requested action.
+
+If a required source cannot be read, a material source conflicts with the target, an action is outside authorized scope, or a mandatory gate is impossible, **stop the affected action** and report the precise issue. Never fake compliance. Higher-priority platform/safety constraints and explicit permissions apply; reconcile target-specific product requirements without silently weakening this workflow.
+
+Persist critical decisions in the **target** repo's spec/decision log when authorized, or in an explicit hand-off if the environment is read-only. This reference repo must not acquire target application secrets or project-local state.
 
 ---
 
 ## 1. Principles
 
-1. **Written source of truth.** Spec, rules and decisions live in repo files. A decision taken in chat is written into `docs/SPEC.md` (decision log) the same day.
-2. **Small verified steps.** Each step is buildable, testable and reviewable on its own branch.
-3. **The owner checks behaviour, not code.** Every step ends with a preview and a check list on the real device.
-4. **Honest reporting.** Failing checks are shown. Skipped work is named. "Done" means shown working.
-5. **Sessions start cold.** Re-read `CLAUDE.md`, this file and `docs/SPEC.md` at the start of every session and every step.
+1. **Written source of truth.** Product spec, applicable rules and decisions live in the target repo. A material decision in chat is written into the target's `docs/SPEC.md` decision log when editing is authorized (otherwise reported for recording).
+2. **Small verified steps.** Each step is buildable, testable and reviewable on its own branch when Git operations are authorized.
+3. **Owner checks behavior.** Every UI step ends with a preview and clear checks on the real test device; an agent may not claim to have used a device it cannot access.
+4. **Honest reporting.** Failing checks and skipped work are named. "Done" means verified to the stated quality gates, not merely code written.
+5. **Cold start each session and step.** Re-read the pinned playbook and applicable target spec; follow §0.
+6. **Minimal sufficient capability.** Use only helpful subagents, the least expensive adequate models and appropriate effort without weakening verification (§9).
 
 ---
 
-## 2. Phase 1 — Spec (no code yet)
+## 2. Phase 1 — Specification (no code yet)
 
-1. **Interview.** Ask the owner in rounds of multiple-choice questions (AskUserQuestion, up to 4 per round, recommended option first, "(Recommended)" in its label). Continue until nothing material is ambiguous. Ask everything up front, not drip-fed during building.
-2. **Check reality.** If an external system exists (database, API), read its real schema and copy names and option labels **exactly**.
-3. **Write `docs/SPEC.md`** from `docs/SPEC.template.md`. Required sections: Goal, Data (exact names), Build order, Decision log. Everything else free-form.
-4. **Write `SETUP-FOR-OWNER.md`**: every step only the owner can do (accounts, env vars, connectors, app installs), in plain words.
-5. **Fill `CLAUDE.md`** settings with the owner's answers.
-6. **Owner approves the spec.** Record it in the decision log. Only then Step 1.
+1. **Interview.** Inspect existing target materials first. Ask the owner grouped questions (up to four per round when structured questioning is supported), with a recommended option where useful. Resolve material ambiguities before implementation, not trivial matters that the spec already answers.
+2. **Check reality.** Read real external schema/API information where authorized; copy names and option labels **exactly** and identify fields that may be written.
+3. **Write/update the target's `docs/SPEC.md`**, following `docs/SPEC.template.md` or an existing equivalent. Required: goal, data, build order, decision log, workflow settings (including playbook SHA). Do not overwrite a valid existing spec; reconcile it.
+4. **List owner-only setup** (accounts, secrets, connectors, device installs) in the target's chosen tracking document or hand-off, without pasting secret values.
+5. **Record project settings** (approval mode, devices, commands, scope, dependencies and release authority) in the target's spec/instruction file.
+6. **Owner approves the spec** explicitly. Record approval. **No implementation code before approval**, unless the owner expressly authorizes a smaller diagnostic-only task that does not implement the product.
 
-Spec changes later: separate commit with prefix `SPEC:`, plus a decision-log line.
+Later material spec changes: a separate `SPEC:` commit where Git is available, plus a decision-log entry. Resume implementation only after the change is approved as appropriate.
 
 ---
 
 ## 3. Approval modes
 
-Set in `CLAUDE.md`. In every mode, a production merge needs the owner's OK unless it is delegated in writing in `CLAUDE.md` (who, when, conditions).
+Select and record the mode in the **target** project's written settings; default **Strict**. Every mode requires owner approval for production merge unless a written target-project delegation specifies approver, date, scope and conditions.
 
-| Mode | Claude may start the next step when… | Owner reviews |
+| Mode | Agent may start the next step when… | Owner reviews |
 |---|---|---|
-| **Strict** | the owner said OK to the current step | every step, on the preview |
-| **Milestone** | the current step passes all automated checks and is inside the current milestone | at the end of each milestone |
-| **Autonomous** | the current step passes all automated checks | at the end of the build order (or when Claude is blocked) |
+| **Strict** | Owner explicitly approved the completed current step | Every step on the preview |
+| **Milestone** | Current step passed mandatory automated gates and falls inside the current approved milestone | At each milestone |
+| **Autonomous** | Current step passed mandatory automated gates and remains within approved spec/scope | At end of build order, or when blocked |
 
-In any mode, Claude stops and asks when: reality contradicts the spec, a new dependency is needed, a decision isn't covered by the spec, or a check fails and the fix would change scope.
-
----
-
-## 4. Phase 2 — The step loop
-
-For each step of the build order:
-
-1. **Re-read** `CLAUDE.md`, this file, the spec section for the step, and the design-system README if UI is touched.
-2. **Clarify** anything open, in one round of questions, before writing code.
-3. **Branch.** One branch per step. Large steps split into parts (`6a part 1`, `6a part 2`, `6b`), each its own commit.
-4. **Build in this order:** data layer → pure logic (no I/O, unit-tested) → UI that only renders view models. Every number or rule on screen has a test behind it.
-5. **Verify** (§6, gate 1). Fix until clean.
-6. **Push, open a draft PR**, subscribe to its activity (§8).
-7. **Hand-off message** (§5).
-8. **Wait** as the approval mode requires. Owner feedback → fixes on the same branch → new hand-off.
-9. **Merge** when the mode allows. Then the next step.
+In **all modes**, stop when reality contradicts the spec, a new unapproved dependency is needed, an unaddressed material decision appears, or a failure cannot be fixed without changing scope. "Autonomous" never means unrestricted access, automatic Astra use or bypassing quality gates.
 
 ---
 
-## 5. Hand-off message (end of every step)
+## 4. Phase 2 — Implementation step loop
 
-Always these five parts, in this order:
+For each authorized build-order step:
 
+1. **Re-read and preflight (§0).** Read the pinned workflow, target instructions, relevant spec section and design-system README when UI is touched.
+2. **Clarify** remaining material uncertainty before coding.
+3. **Branch.** Where Git write tools are authorized, use one branch per step; split larger steps into independently verifiable parts. If branching/PR tools are unavailable, state the deviation and follow the owner-approved alternative; do not claim branches/PRs exist.
+4. **Build** in this order when appropriate: data layer → pure logic (no I/O, unit-tested) → UI rendering view models. Every displayed business rule/derived number must have meaningful tests. Adapt the order explicitly when the architecture requires it.
+5. **Verify** (§6 gate 1; other gates as applicable). Fix and retest.
+6. **Push and create a draft PR** when authorized and supported; configure actual monitoring only if available (§8).
+7. **Hand-off** (§5), with evidence and a clear indication of incomplete gates.
+8. **Wait** as the active approval mode requires. Owner feedback leads to changes on the same branch and a fresh hand-off.
+9. **Merge** only when all applicable gates and release permissions are satisfied. Then begin the next step.
+
+---
+
+## 5. Hand-off at the end of every step
+
+Always provide five parts, in this order:
+
+```text
+Step N — <name> · Preview: <verified URL, or "not available">
+
+What to check (on <device>, or "owner verification pending")
+1. <action> → <expected outcome>
+2. ...
+
+Not in this step
+- <expected feature deferred to Step M>
+
+Checks
+- lint: PASS/FAIL/NOT RUN with evidence
+- build: PASS/FAIL/NOT RUN with evidence
+- tests: PASS/FAIL/NOT RUN with counts/evidence
+- extra QA gates and review: PASS/PENDING/BLOCKED
+- playbook: <SHA>; models/effort/subagents used where observable
+
+Open questions / next
+- <decision needed, with recommendation>
+- Next: Step N+1 — <name>; permitted only after <approval condition>
 ```
-**Step N — <name>** · Preview: <URL>
 
-**What to check** (on <device>)
-1. <action> → <what you should see>
-2. …
-
-**Not in this step**
-- <thing the owner might expect but that comes later — Step M>
-
-**Checks**
-- lint ✅ · build ✅ · tests ✅ 142 passed  (or ❌ with the failing output)
-
-**Open questions / next**
-- <decision needed, with recommended option>
-- Next: Step N+1 — <name>
-```
-
-Rules: check list in plain words, one action per line, written for a phone. Never hide a failure.
+Use plain-language device checklists; one action per line. Never invent a preview URL, test count, model choice, review or device result.
 
 ---
 
@@ -88,73 +113,129 @@ Rules: check list in plain words, one action per line, written for a phone. Neve
 
 | # | Gate | When | Required |
 |---|---|---|---|
-| 1 | Lint + build + unit tests pass | before every push | always |
-| 2 | Real-data run: run the feature against real inputs (all of them if feasible); save representative real samples as test fixtures | before the step that handles external data is approved | always |
-| 3 | Independent code review (`/code-review` or a separate review subagent); fixes in their own commit `Fixes from the code review` | before production | always |
-| 4 | Final QA: full walkthrough of every screen on the test device; fixes in `Fixes from the final QA` | before production | always |
-| 5 | Visual check: screenshots of each screen in every supported theme and size (from `CLAUDE.md` settings) | before production; also for UI-heavy steps | always |
+| 1 | Lint + build + unit tests pass | Before every push / step completion | Always where applicable; otherwise explain and approve the equivalent |
+| 2 | Real-data run using representative **authorized** real inputs; safe redacted/synthetic test fixtures for regression tests | Before approving a step that handles external data | Always for external-data features |
+| 3 | **Independent** code review by an agent/person **who did not write the code**; fixes in separate `Fixes from the code review` commit where Git is available | Before production | Always |
+| 4 | Final QA walkthrough of supported screens on the real test device; fixes in `Fixes from the final QA` commit where available | Before production | Always for device/UI apps |
+| 5 | Visual check with screenshots of each screen/theme/size specified for the target | Before production; also UI-heavy steps | Always for UI apps |
 
-Every bug fixed gets a test, so later sessions cannot regress it.
+Every fixed bug gets a regression test when technically feasible. Do not store production secrets, access tokens or personal data unnecessarily in fixtures, artifacts, screenshots or logs. Redact sensitive samples; get permission before running actions against real data.
+
+If the agent cannot use the device or browser, the **owner** must conduct the required checks and report evidence. The gate remains PENDING until verified; do not claim completion. If tests/tools are missing, report the exact missing verification and seek an authorized equivalent, never silently mark PASS. An agent cannot independently review its own implementation just by adopting a different persona.
 
 ---
 
-## 7. Safety rules
+## 7. Safety and scope
 
-- Secrets only in environment variables. Never in repo files, logs, chat output or client code.
-- `.env.example` lists variable names with no values.
-- External credentials used server side only.
-- The app writes only the fields/resources listed in `CLAUDE.md`.
-- Paginate every external query.
-- No fake data outside test fixtures.
-- Reality ≠ spec → stop and report. Don't guess, don't rename.
-- New dependency → ask first; on approval add it to `CLAUDE.md` with approver and date. Dev tooling (lint, test runner) excepted.
+- Never commit or print secrets. Only harmless variable names go into `.env.example`; never client-expose server secrets.
+- Use exact external field and option names from the approved spec. Unexpected schema → stop and report; don't guess or rename.
+- Write only to exact approved external resources/fields. No other create/update/delete operations.
+- Paginate external queries when supported/needed; handle rate limits and incomplete results honestly.
+- No invented product data outside labeled test fixtures.
+- Ask before adding any dependency not approved in the target's project settings; record who approved it and when. Lint/test development tooling exceptions require a documented reason and remain subject to security rules.
+- Do not change other repositories or production services merely because they are visible or connected.
+- Never relax host permissions, security rules, tests or user approval gates to make a check appear green.
 
 ---
 
 ## 8. Git and PR conventions
 
-- Branch per step: `step-<n>-<short-name>`; docs: `docs/<name>`; spec: commits prefixed `SPEC:`.
-- Commit messages name the step and the user-visible change: `Step 4: Progress screen (hours, weekly chart, streak)`.
-- PR titles describe what the user sees, not the code.
-- Every pushed branch gets a **draft PR**.
-- **PR watching is on by default:** Claude subscribes to every PR it opens and drives it to green — fixes CI failures, answers review comments, re-runs nothing blindly, never skips or disables tests.
-- Never rewrite history on a branch someone else works on.
+- Branch per step: `step-<n>-<short-name>`; docs: `docs/<name>`; spec commits begin with `SPEC:`.
+- Commit messages name the step and user-visible change.
+- PR titles describe user-visible behavior. Every pushed step branch gets a **draft PR** where supported/authorized.
+- **PR monitoring is conditional on actual capabilities.** If an ongoing subscription, automation or active session can monitor a PR, configure it with consent and explain its scope. Otherwise report that the PR is **not actively monitored**, and do not claim to work between sessions.
+- Resolve CI failures and review comments before merge, rerunning appropriate checks; never disable or skip tests merely to obtain green status.
+- Do not rewrite history on branches where someone else works.
 
 ---
 
-## 9. Subagents and models
+## 9. Subagents, models, reasoning, and budget
 
-Use subagents only when they pay off (parallel independent work, large sweeps, independent review).
+### 9.1 Provider-neutral model selection
 
-| Work | Model |
-|---|---|
-| Research, read-only sweeps, light low-risk tasks | Sonnet or Haiku |
-| Building, implementation, verification, fixing errors | Opus (or Fable if available) |
+Choose the **lowest-cost model and lowest supported reasoning effort that can reliably achieve the required outcome**, considering complexity, ambiguity, risk and available verification. Correctness and safety are non-negotiable.
 
-- Effort at most **High**. Never max.
-- Independent subagents run in parallel in the same turn.
-- The code review (gate 3) is done by an agent that did not write the code.
+| Work / capability tier | Claude examples | Codex / ChatGPT examples | Default effort |
+|---|---|---|---|
+| Read-only file discovery, simple extraction, low-risk mechanical work | Haiku | Luna | Low |
+| Scoped analysis, UI inspection, straightforward edits with good tests | Sonnet | Terra | Medium |
+| Architecture, implementation, integration, difficult debugging and substantive verification | Opus (or Fable if available) | Sol | Medium; High where justified |
+| Exceptional unresolved or consequential problem | Strongest separately approved provider configuration | **Astra: restricted, explicit approval** | Up to High unless separate policy change |
+
+These examples are **not cross-provider performance equivalences** or guaranteed selectable models. Resolve actual model identifiers against the active provider/session; never invent or misreport the model used. A small well-tested code change may use a lighter model; critical research may require a stronger one.
+
+### 9.2 Reasoning effort
+
+- **Low:** bounded extraction, navigation, simple mechanical tasks.
+- **Medium:** normal implementation, bounded changes, structured analysis.
+- **High:** difficult debugging, architecture/security decisions, complex review or genuine ambiguity.
+
+**High is the maximum allowed effort by default.** Never use Extra High, XHigh, Max or a higher equivalent without an explicit policy exception from the owner. Lower the effort when the task does not justify it. If an agent lacks effort controls, report that limitation, and do not claim a chosen level was enforced.
+
+### 9.3 Astra — restricted use
+
+Astra is **not** a default main-agent model and **must not** be automatically spawned as a subagent. It may be proposed only for:
+1. A substantial issue that Sol at High has not adequately resolved; or
+2. An exceptional, high-impact technical decision where stronger reasoning is justified *in advance*.
+
+Before **each invocation**, explain the exact problem, why Sol/standard tier is insufficient, the **single bounded task**, and the expected benefit. Get **explicit owner approval for that invocation**. An approval does not persist to other tasks, subagents, sessions or projects. Never silently escalate to Astra, even if a provider offers it as a fallback. Apply similarly strict consent to another provider's unusually high-consumption restricted model if one is designated.
+
+If the host selected Astra before this playbook was adopted and the agent cannot change the main model, **report the actual model and restriction**; do not pretend the policy changed the host selector. The owner decides whether to continue in that environment.
+
+### 9.4 When and how to delegate
+
+Use subagents **only when they pay off**: independent parallel work, large read-only sweeps, isolated context or independent review. A simple, dependent or single-file task normally stays with the main agent.
+
+- Main agent retains responsibility for planning, coordination, integration, validation and owner approvals.
+- Prefer **no more than three concurrent subagents** unless clear measured benefit justifies more.
+- Parallelize independent tasks in the same turn when supported; sequence dependent tasks.
+- Each delegation defines objective, relevant files, allowed operations, constraints, output format and completion criteria.
+- Avoid parallel writes to the same files/shared mutable state without isolated worktrees and coordination.
+- Wait for the needed subagent results; verify and integrate rather than blindly accepting summaries.
+- All delegated agents inherit the **same applicable safety and scope constraints**; delegation cannot bypass approvals, model limits or testing gates.
+- Subagents add context isolation but also consume additional usage; count that cost in the decision.
+
+### 9.5 Independent review, availability and transparency
+
+The gate-3 reviewer **must not be the implementer**. Use an independent subagent, separate agent/session with genuinely separate implementation responsibility, or a human reviewer. For high-risk code, favor a strong model at High. A self-review may be useful but **does not count** as the mandatory independent review.
+
+Check actual model/effort/tool availability. Use approved equivalent tiers when the preferred one is missing and explain any material substitution; never silently substitute restricted or higher-consumption models. If no compliant option exists, mark the affected work BLOCKED. In hand-off, report the main agent and subagents/models/efforts **where observable**, and identify every unknown rather than inventing details.
 
 ---
 
-## 10. Default stack
+## 10. Default stack (only when the target spec does not say otherwise)
 
-Use unless the spec says otherwise.
+- **Framework:** Next.js App Router, TypeScript strict.
+- **Hosting:** Vercel preview deployments per branch; production `main` by default.
+- **Source control:** target application repository on GitHub.
+- **Agent environment:** any compatible local/cloud coding environment with the needed permissions; not necessarily Claude Code.
+- **Testing:** Vitest for pure logic; adapt to project requirements.
+- **Commands:** `npm run lint`, `npm run build`, `npm test`, `npm run dev` only when actually defined in the target.
+- **Secrets:** environment/secret-manager storage, server-only use; never client-expose sensitive values.
 
-- **Framework:** Next.js (App Router) + TypeScript strict.
-- **Hosting:** Vercel — preview deployment per branch, production = `main`.
-- **Repo:** GitHub, accessed by Claude through the GitHub tools.
-- **Dev environment:** Claude Code on the web (cloud sandbox); owner tests previews on the device.
-- **Tests:** Vitest for all pure logic.
-- **Commands:** `npm run lint`, `npm run build`, `npm test`, `npm run dev` (sandbox only).
-- **Secrets:** cloud environment variables (sandbox) + Vercel env vars (Preview + Production). Never `NEXT_PUBLIC_` on a secret.
+The app's current approved stack outranks these **defaults**. Never install Next.js, Vercel or a test framework in an existing project just because this default is listed.
 
 ---
 
 ## 11. Communication
 
-- Docs and code in English. Replies in the language the owner writes in.
-- Owner-facing text (check lists, setup docs, UI copy) in simple language.
-- Ask clarifying questions up front with a recommended option.
-- Short status lines while working; the record lives in commits, PRs and docs.
-- Say what was not done and why.
+- Docs and code in English; reply in the owner's language.
+- Owner-facing checklists and setup steps in simple language.
+- Ask material clarification questions early with a recommended option when useful.
+- Keep progress updates concise; durable records belong in target commits, PRs and spec/decision log.
+- State what was **not** done, why, and which gates remain pending.
+
+---
+
+## 12. Compliance and cross-session continuity
+
+At every session start and step, execute §0 and report **READY or BLOCKED**. Before each hand-off, re-check:
+- Correct target repo and pinned playbook SHA; required files genuinely read.
+- Authorized spec, step, approval mode and external write scope.
+- Actual models/efforts/subagents; Astra not used without task-specific permission.
+- Tests, previews, review and device evidence, distinguishing PASS / FAIL / NOT RUN / PENDING.
+- Git/PR/monitoring and production permissions, without invented background capabilities.
+
+Use real tool results, logs, review records and explicit owner confirmation as evidence; words in a prompt are not proof that any check ran. When transitioning to a new chat, project or workspace, carry forward the pinned SHA and hand-off summary, **then re-read the source files**. A workspace connection alone is not activation.
+
+Instruction files express intended behavior but cannot enforce access controls or model selection in a host that offers no such controls. For stronger guarantees use host permissions, actual agent configuration, hooks where supported, CI checks, branch protection and owner approvals. Never represent a natural-language instruction as a technical enforcement guarantee.
