@@ -219,11 +219,21 @@ The app's current approved stack outranks these **defaults**. Never install Next
 
 ## 11. Communication
 
-- Docs and code in English; reply in the owner's language.
+- Docs and code in English; reply in the owner's language. Use clear, concise, consistent wording inspired by ASD-STE100 (approximately 80% of its style, not a formal compliance claim); preserve technical precision and necessary detail.
 - Owner-facing checklists and setup steps in simple language.
 - Ask material clarification questions early with a recommended option when useful.
 - Keep progress updates concise; durable records belong in target commits, PRs and spec/decision log.
 - State what was **not** done, why, and which gates remain pending.
+
+### 11.1 Visual explanations for coding work
+
+Use visuals **frequently and proactively when they improve understanding**, especially for non-trivial software engineering. For complex architecture, component boundaries, dependencies, data movement, algorithms, state transitions, asynchronous execution, debugging, and before/after behavior, prefer to include a compact, accurate diagram alongside the explanation rather than relying on prose alone. Use the simplest sufficient form: Mermaid flowcharts, sequence diagrams or state diagrams in Markdown when supported; otherwise a readable text/ASCII diagram, table or annotated code excerpt. Explain key decisions and trade-offs in text as well.
+
+- Before implementation, a visual can make the proposed design, interfaces, risks and sequence of work reviewable. During debugging, show the observed path, expected path and failure point where useful. At hand-off, summarize important changed flows or architecture visually when the step is complex.
+- Base diagrams on actual inspected code, verified behavior or explicitly labeled proposals. Distinguish current state from planned state, and never invent integrations, dependencies, test results or runtime behavior.
+- A small self-evident code edit, simple fix or routine status update does not need a diagram. Avoid repeated, decorative or low-information visuals; do not let presentation delay coding, review, testing or the mandatory hand-off.
+- Consider interactive HTML explanations or small executable visualizations when static diagrams are insufficient and interaction materially helps inspect complex behavior. Build them only within the authorized scope and supported environment; do not add application features, persistent project files, dependencies, external API calls or expense merely to explain work without the required permission.
+- Explainer videos and elaborate visual artifacts are opt-in: create them only when the owner explicitly requests them. No visual replaces source code, tests, logs, evidence, required reports, approval gates or accessibility checks.
 
 ---
 

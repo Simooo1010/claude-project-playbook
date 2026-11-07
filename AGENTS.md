@@ -13,3 +13,13 @@ Never put secrets in the repository or chat. Never infer that access to a GitHub
 
 ## For changes to this playbook itself
 Preserve the provider-neutral workflow and its original spec-first, approval, step-loop and QA principles. Keep the model policy in WORKFLOW §9 as the single canonical rule; provider-specific examples belong in `docs/PROVIDER-ADAPTERS.md`. Changes to governance should be reviewed on a branch before merge.
+
+## ASD-STE100-inspired communication style
+
+For owner-facing explanations, reasoning summaries, decisions, and progress reports, follow this writing prompt when responding in English:
+
+> Explain your reasoning and results in English, approximately 80% of the way to ASD-STE100 Simplified Technical English. Use clear, short sentences, consistent terminology, and direct explanations. Preserve technical precision and necessary detail. Avoid unnecessary jargon and verbosity.
+
+This is an approximate readability preference, not a claim of formal ASD-STE100 compliance. When the owner communicates in another language, respond in that language as required by `docs/WORKFLOW.md` §11, while using equivalent clarity principles; do not force English. Apply the style to explanatory prose, not to source code, tests, commands, raw logs, API names, technical identifiers, or quoted material. Preserve all mandatory workflow details, technical evidence, approval gates, and hand-off requirements.
+
+The canonical coding-specific guidance on frequent, useful diagrams and optional interactive explanations is in `docs/WORKFLOW.md` §11.1. Follow it when this playbook is adopted; avoid decorative visuals and do not replace engineering evidence or quality gates.
