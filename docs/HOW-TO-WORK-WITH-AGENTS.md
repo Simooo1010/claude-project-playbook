@@ -10,6 +10,14 @@ Select/open the application repository, and make `https://github.com/Simooo1010/
 
 The agent should inspect the target's actual situation before asking questions. If a valid approved spec already exists, don't restart discovery unnecessarily: confirm it is current and correctly versioned first. If not, begin the spec interview using a few grouped questions with recommended options where supported, until **material** ambiguities are resolved.
 
+### Fast mode (quick builds)
+
+For a prototype, MVP or internal tool, append to the activation prompt:
+
+> Use **Fast profile** (WORKFLOW §13). Write a one-page brief from my request, ask at most one round of three blocking questions, then build autonomously in vertical slices on one branch and one PR. Do not wait for approval between steps. Give me one short hand-off at the end: preview link, 3–5 checks, what is broken or not done, assumptions. Stop only for the §13.2 hard stops.
+
+In Fast mode, skip sections 2 and 3 below: your "go" approves the brief, and you review once at the end. Ask the agent to propose graduating to Standard (§13.4) when real users, real data or money appear.
+
 ## 2. Review and approve the spec
 
 Read the project-specific `docs/SPEC.md` (or the equivalent agreed artifact). Confirm the build order, data names, allowed writes, test device, dependencies, approval mode and playbook commit. Reply **"Spec approved"** only after checking it. The agent records that decision. If you change direction, say **"Change of plan: …"** and require an updated spec/decision log **before** code.

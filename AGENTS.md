@@ -5,7 +5,9 @@ This repository is the **central reference playbook**, not the application repos
 ## Activate only when explicitly adopted
 When the owner designates this playbook, read `docs/WORKFLOW.md` completely and use `docs/HOW-TO-WORK-WITH-AGENTS.md` for external-repository onboarding. The authoritative method is `docs/WORKFLOW.md`; this entrypoint is only a pointer.
 
-Before doing project work, identify the *target* repository separately from this *playbook* repository, record the playbook commit/ref actually read, inspect the target's applicable instructions and spec, and perform the startup preflight in WORKFLOW §0. Repeat the step preflight for every implementation step. Do not assert that reading this file in the playbook repository automatically installs instructions in other repositories.
+Before doing project work, identify the *target* repository separately from this *playbook* repository, record the playbook commit/ref actually read, inspect the target's applicable instructions and spec, and perform the startup preflight in WORKFLOW §0. Run a short delta check (not the full preflight) for each later step in the same session.
+
+**Fast profile.** If the owner says "fast mode" or sets `Profile: Fast`, follow WORKFLOW §13 instead of the heavier Standard gates (brief instead of full spec, no per-step approval, one end-of-build hand-off). The safety rules (§7), hard stops (§13.2) and model policy (§9) still apply. Never switch to Fast without the owner's request. Do not assert that reading this file in the playbook repository automatically installs instructions in other repositories.
 
 If you cannot read a required file or cannot satisfy a mandatory gate, disclose that precisely and stop the affected operation rather than pretending compliance. Provider limitations, owner approvals, security restrictions and actual permissions still apply.
 

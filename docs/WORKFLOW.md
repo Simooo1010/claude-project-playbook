@@ -4,13 +4,17 @@ Canonical development method for Claude Code, Codex and any other coding agent. 
 
 `AGENTS.md` is an entrypoint, not a substitute for this file. `docs/PROVIDER-ADAPTERS.md` has implementation examples; this file remains authoritative for the method.
 
+**Two profiles.** **Standard** (§0–§12) is the careful default for projects that will have real users, real data or long life. **Fast** (§13) is an owner-selected profile for prototypes, MVPs and internal tools that must ship quickly. If the owner says "fast mode" or writes `Profile: Fast` in the target's settings, read §13 and follow it **instead of** the heavier Standard rules it names. Safety rules (§7) and model limits (§9) apply in both profiles.
+
 ---
 
 ## 0. Activation, external references, and startup preflight
 
 The owner may explicitly adopt this playbook in a session that also has access to an application repository. **Access to two repositories alone does not activate the playbook.** No instruction file in this reference repo automatically governs a different repo, project, workspace or chat.
 
-On **every new session** and **every implementation step**, before implementation or delegation:
+On **every new session**, before implementation or delegation, run the full preflight below. On **each later implementation step in the same session**, run only a **delta check**: confirm the step is inside the approved spec/scope, the pinned playbook SHA is unchanged, and no new dependency, decision or blocker appeared. Report it in one line. Repeat the full preflight only if the session restarts, the playbook SHA changes, or the target's instructions/spec change materially.
+
+Full preflight:
 
 1. Identify the **target repo** (code and project-specific truth) separately from this **playbook repo** (method). Confirm that the owner expressly adopted this workflow.
 2. Fetch and read the **full** `AGENTS.md`, this `docs/WORKFLOW.md`, and the relevant owner/provider guides from this playbook; inspect the target's relevant instructions, current spec, decision log, code state and open work. Do not rely on a search excerpt or prior-chat summary as proof of reading.
@@ -31,7 +35,7 @@ Persist critical decisions in the **target** repo's spec/decision log when autho
 2. **Small verified steps.** Each step is buildable, testable and reviewable on its own branch when Git operations are authorized.
 3. **Owner checks behavior.** Every UI step ends with a preview and clear checks on the real test device; an agent may not claim to have used a device it cannot access.
 4. **Honest reporting.** Failing checks and skipped work are named. "Done" means verified to the stated quality gates, not merely code written.
-5. **Cold start each session and step.** Re-read the pinned playbook and applicable target spec; follow §0.
+5. **Cold start each session.** Re-read the pinned playbook and applicable target spec; follow §0. Later steps use the delta check.
 6. **Minimal sufficient capability.** Use only helpful subagents, the least expensive adequate models and appropriate effort without weakening verification (§9).
 
 ---
@@ -67,7 +71,7 @@ In **all modes**, stop when reality contradicts the spec, a new unapproved depen
 
 For each authorized build-order step:
 
-1. **Re-read and preflight (§0).** Read the pinned workflow, target instructions, relevant spec section and design-system README when UI is touched.
+1. **Delta check (§0).** Re-read the relevant spec section and, when UI is touched, the design-system README. Re-read the full workflow only when §0 says a full preflight is due.
 2. **Clarify** remaining material uncertainty before coding.
 3. **Branch.** Where Git write tools are authorized, use one branch per step; split larger steps into independently verifiable parts. If branching/PR tools are unavailable, state the deviation and follow the owner-approved alternative; do not claim branches/PRs exist.
 4. **Build** in this order when appropriate: data layer → pure logic (no I/O, unit-tested) → UI rendering view models. Every displayed business rule/derived number must have meaningful tests. Adapt the order explicitly when the architecture requires it.
@@ -239,7 +243,7 @@ Use visuals **frequently and proactively when they improve understanding**, espe
 
 ## 12. Compliance and cross-session continuity
 
-At every session start and step, execute §0 and report **READY or BLOCKED**. Before each hand-off, re-check:
+At every session start, execute the full §0 preflight and report **READY or BLOCKED**; at each step, run the delta check. (Fast profile: see §13.) Before each hand-off, re-check:
 - Correct target repo and pinned playbook SHA; required files genuinely read.
 - Authorized spec, step, approval mode and external write scope.
 - Actual models/efforts/subagents; Astra not used without task-specific permission.
@@ -249,3 +253,49 @@ At every session start and step, execute §0 and report **READY or BLOCKED**. Be
 Use real tool results, logs, review records and explicit owner confirmation as evidence; words in a prompt are not proof that any check ran. When transitioning to a new chat, project or workspace, carry forward the pinned SHA and hand-off summary, **then re-read the source files**. A workspace connection alone is not activation.
 
 Instruction files express intended behavior but cannot enforce access controls or model selection in a host that offers no such controls. For stronger guarantees use host permissions, actual agent configuration, hooks where supported, CI checks, branch protection and owner approvals. Never represent a natural-language instruction as a technical enforcement guarantee.
+
+---
+
+## 13. Fast profile — ship quickly, keep the safety floor
+
+**Purpose:** minimum owner effort and maximum build speed for prototypes, MVPs, internal tools and throwaway experiments. The owner selects it ("fast mode" in the prompt, or `Profile: Fast` in the target's settings). The agent never switches to Fast by itself.
+
+**Not for:** payments, authentication/authorization, personal or regulated data, destructive data migrations, or a first release to real users. For those, use Standard, or **graduate** (see below) before they are touched.
+
+### 13.1 What changes compared with Standard
+
+| Area | Standard | Fast |
+|---|---|---|
+| Startup (§0) | Full preflight, report, pinned SHA | Read §7, §9 and this section once per session. One-line report: `Target: <repo> · Playbook: <ref> · Profile: Fast · Ready`. Note the ref; no SHA pin, no per-step re-read |
+| Spec (§2) | Interview, full spec, explicit approval before code | One-page **brief** (goal, stack, scope, out of scope, assumptions) written from the owner's prompt. Ask **at most one round of three questions**, only for blockers; otherwise assume and list the assumptions. Owner's "go", or no objection, is approval. Code may start at once |
+| Approval mode (§3) | Strict by default | **Autonomous** inside the brief. No owner approval between steps |
+| Steps (§4) | One branch + draft PR per step | Vertical slices (thin, working, end to end). One working branch and one PR for the whole build, unless the owner allows direct commits to a prototype repo. Commit often |
+| Hand-off (§5) | Five parts every step | Short note at the **end** (or when blocked): preview link, 3–5 checks, what is broken or not done, assumptions made |
+| Gate 1 (lint/build/test) | Every push | Keep it, where commands exist. Write tests only for non-trivial business logic. Fix failures; never skip checks to get green |
+| Gate 2 (real data) | Per external-data step | Once, at the end, with authorized data |
+| Gate 3 (independent review) | Mandatory before production | Skipped for prototypes. **Required once** before any production release or sharing with real users: one independent pass, fixes in one commit |
+| Gates 4–5 (QA, screenshots) | Mandatory before production | Owner smoke test of the main flow at the end. Screenshots only if the owner asks |
+| Visuals (§11.1) | Proactive diagrams | Only on request |
+| Communication (§11) | Detailed | Terse. Report decisions and results, not process |
+
+### 13.2 Hard stops (still apply in Fast)
+
+Stop and ask the owner before:
+- Anything involving secrets, credentials or personal data. Never commit or print secrets (§7).
+- Writing to, or deleting from, any external system or data not named in the brief.
+- Adding a paid service, or a dependency the brief did not name or clearly imply. Common libraries for the chosen stack that the brief clearly implies are allowed. Record them in the brief.
+- Deploying to production or merging to the production branch, unless the owner delegated it in writing.
+- A conflict between the brief and reality that changes scope (wrong schema, missing API, impossible requirement).
+- Any use of Astra or another restricted model (§9.3).
+
+### 13.3 Models and subagents
+
+§9 applies unchanged. Fast saves owner time, not model budget: prefer the cheapest adequate model, High effort at most, and delegate only when parallel work clearly pays off.
+
+### 13.4 Graduating to Standard
+
+Switch to Standard when the project gets real users, real data or money flows, or when the owner asks. Before the switch: write the full spec from the brief, record it in the decision log, run gate 3 (independent review) and gates 4–5, and add tests for important logic. The agent should **propose** graduating when it sees these triggers; the owner decides.
+
+### 13.5 Honesty still applies
+
+Fast skips ceremony, not truth. Do not claim a check ran when it did not. Name every skipped gate in the end note (`gate 3: SKIPPED (Fast, prototype)`).

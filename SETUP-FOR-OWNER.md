@@ -8,7 +8,7 @@ This file is a checklist **pattern**, not a record of completed setup for every 
 - [ ] Make `Simooo1010/claude-project-playbook` accessible as a **separate reference** (or provide the relevant content).
 - [ ] Explicitly ask the agent to adopt the playbook; selecting two repositories by itself is not enough.
 - [ ] Confirm the agent reports the playbook commit SHA and successfully read the mandatory files.
-- [ ] Agree on the target's approval mode (default: Strict) and authorize the product spec before coding.
+- [ ] Choose the profile: Standard (default) or Fast (WORKFLOW §13, for prototypes/MVPs). For Standard, agree on the approval mode (default: Strict) and authorize the product spec before coding. For Fast, say "go" on the one-page brief.
 - [ ] Set any required secrets in supported environment-variable/secret-manager controls, **never in chat or Git**.
 - [ ] Connect external systems and grant narrowly scoped permissions only when required.
 - [ ] Test preview URLs on the specified real device, or explicitly confirm why a mandatory release gate remains pending.

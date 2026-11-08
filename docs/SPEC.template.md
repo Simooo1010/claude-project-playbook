@@ -27,7 +27,8 @@ Each step must be testable and reviewable.
 
 ## 6. Workflow settings (required)
 - **Playbook source/ref:** <repository URL and immutable commit SHA actually read>.
-- **Approval mode:** <Strict | Milestone | Autonomous>; default Strict.
+- **Profile:** <Standard | Fast>; default Standard. Fast (WORKFLOW §13) uses a one-page brief instead of this full template: goal, stack, scope, out of scope, assumptions, plus these workflow settings.
+- **Approval mode:** <Strict | Milestone | Autonomous>; default Strict. Ignored when Profile is Fast (Autonomous within the brief).
 - **Owner:** <name or role>.
 - **Test device(s):** <real devices>.
 - **Supported UI:** <themes and sizes>.

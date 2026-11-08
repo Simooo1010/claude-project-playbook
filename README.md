@@ -14,6 +14,14 @@ A provider-neutral, **externally referenced** development workflow for Claude Co
 
 4. Approve the spec when it accurately describes the work. Continue step by step using the approval mode selected for that target project.
 
+### Fast mode — for projects that must be built quickly
+
+For prototypes, MVPs and internal tools, add this line to the activation prompt:
+
+> Use **Fast profile** (WORKFLOW §13): write a one-page brief instead of a full spec, ask at most one round of blocking questions, build autonomously in vertical slices on one branch/PR, and give me one short hand-off at the end. Stop only for the §13.2 hard stops.
+
+Fast mode drops the per-step approvals, the full spec ceremony, per-step hand-offs and the mandatory pre-release QA gates. It keeps secret safety, scope limits, model policy and honest reporting. Do not use it for payments, auth, personal data or a first release to real users, or switch to Standard (§13.4) before those.
+
 **Important:** Merely selecting both repositories, attaching a file, or mentioning this repository does **not** automatically cause an agent working in another repository to read and obey it. The explicit instruction and preflight above are essential. A chat can apply instructions within its accessible context but cannot guarantee future sessions or unsupported actions.
 
 ## Documents
