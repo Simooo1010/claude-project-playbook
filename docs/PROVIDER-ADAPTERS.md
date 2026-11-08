@@ -4,7 +4,7 @@
 
 ## Provider-neutral rule
 
-The application repository is the **target**. This repository is the **reference**. Explicitly ask the agent to read the playbook at a pinned commit; do not rely on cross-repository auto-discovery. Capture the preflight report and require the step loop, review and release gates regardless of provider.
+The application repository is the **target**. This repository is the **reference**. Explicitly ask the agent to read the playbook at a pinned commit; do not rely on cross-repository auto-discovery. Capture the preflight report and require the step loop, review and release gates regardless of provider (in Standard profile; the Fast profile in WORKFLOW §13 relaxes them but keeps §7 safety and §9 model limits).
 
 | Work tier | Claude examples | Codex / ChatGPT examples | Default effort |
 |---|---|---|---|
