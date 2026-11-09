@@ -35,3 +35,7 @@ This rule is **not optional**. It is **not** a suggestion, and it does not depen
 This is an approximate readability preference, not a claim of formal ASD-STE100 compliance. When the owner communicates in another language, respond in that language as required by `docs/WORKFLOW.md` §11, while using equivalent clarity principles; do not force English. Apply the style to explanatory prose, not to source code, tests, commands, raw logs, API names, technical identifiers, or quoted material. Preserve all mandatory workflow details, technical evidence, approval gates, and hand-off requirements.
 
 The canonical coding-specific guidance on frequent, useful diagrams and optional interactive explanations is in `docs/WORKFLOW.md` §11.1. Follow it when this playbook is adopted; avoid decorative visuals and do not replace engineering evidence or quality gates.
+
+## Language
+
+Chat with me in Italian. Write all code, comments, commit messages, docs, config files, skills and subagent prompts in English. Exception: deliverables explicitly meant for Italian readers stay in Italian.
